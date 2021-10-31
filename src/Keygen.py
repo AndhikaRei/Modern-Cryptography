@@ -1,8 +1,10 @@
 import os
+import random
 from Crypto.Util import number
 from Crypto.Random import get_random_bytes
 from datetime import date, datetime
 from typing import Tuple
+
 
 from Utility import *
 
@@ -152,6 +154,117 @@ class RSAKeygen:
 		except :
 			raise Exception("Failed when writing file")
 
+class ElGamalKeygen:
+	"""
+	A class used for generating public and private key from ElGamal algorithm.
+	
+	Attributes.
+	-----------
+	public_key 	: tuple(int, int, int)
+		Public key of Elgamal
+	private_key	: tuple(int, int)
+		Private key of Elgamal
+	"""
+
+	def __init__(self, public_key:Tuple[int, int, int]=(0,0,0), private_key:Tuple[int,int]=(0,0)) -> None:
+		"""
+		Constructor for ElGamalKeygen class.
+		
+		Attributes.
+		-----------
+		public_key 	: tuple(int, int, int)
+			Public key of Elgamal
+		private_key	: tuple(int, int)
+			Private key of Elgamal
+		"""
+		self.public_key = public_key
+		self.private_key = private_key
+
+	def generateKey(self, is_random:bool=True, key_size:int=5, p:int=0) -> None:
+		"""
+		Generate public and private key from parameter given. 
+		
+		Parameter.
+		----------
+		is_random : bool
+			randomize key or not
+		key_size: int
+			length of key (bit) of randomized key
+		p : int
+			prime number
+		"""
+		# If generate random key. 
+		if (is_random):
+			# Get the requirement element.
+			p = number.getPrime(key_size, randfunc=get_random_bytes)
+	
+		# Validation.
+		if (not (isPrime(p))):
+			raise Exception("P must be a prime number")
+		
+		# Get another element. 
+		g = random.randint(2, p-1)
+		x = random.randint(1, p-1)
+		y = pow(g, x, p)
+
+		self.public_key = (y, g, p)
+		self.private_key = (x, p)
+	
+	def loadKey(self, filename:str) -> None:
+		"""
+		Load key from .pri and .pub file.
+		
+		Parameter.
+		----------
+		filename: str
+			name of the file
+		"""
+		try:
+			# Read the file.
+			f = open(filename, "r")
+			res = f.read()
+
+			# Modify the key based on file extension.
+			if (os.path.splitext(filename)[1].lower() == ".pub"):
+				self.public_key = (int(res.split(" ")[0]), int(res.split(" ")[1]), int(res.split(" ")[2]))
+			elif (os.path.splitext(filename)[1].lower() == ".pri"):
+				self.private_key = (int(res.split(" ")[0]), int(res.split(" ")[1]))
+			else :
+				raise Exception("Invalid filename extension")
+			
+		except :
+			raise Exception("Failed when opening file")
+
+	def saveKey(self, is_public: bool = True, filename:str= str(datetime.now())) -> None:
+		"""
+		Write key to file .pri and .pub .
+		
+		Parameter.
+		----------
+		is_public: bool
+			totient value of key
+		filename: str
+			name of the file
+		"""
+		# Filling filename and content.
+		# Default case.
+		ext = ".pub"
+		content = str(self.public_key[0]) + " " + str(self.public_key[1]) + " " + str(self.public_key[2]) 
+		
+		# Private case.
+		if (not is_public):
+			ext = ".pri"
+			content = str(self.private_key[0]) + " " + str(self.private_key[1])
+		
+		# Writing file to directory.
+		filename += ext
+		
+		try:
+			f = open(filename, "w")
+			f.write(content)
+		except :
+			raise Exception("Failed when writing file")
+		
 # Main Program.
 def main():
 	# Test loadfile.

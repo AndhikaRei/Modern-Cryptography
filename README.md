@@ -13,8 +13,8 @@
 Sebuah program Python yang mengimplementasikan kalkuator enkripsi/dekripsi dengan algoritma RSA, 
 ElGamal, Paillier, ECC dengan spesifikasi sebagai berikut:
 1. Program terdiri dari:
-   a. Pembangkitan kunci privat dan kunci publik yang dapat disimpan dalam file terpisa (misalnya *.pub dan *.pri)
-   b. Enkripsi/dekripsi file. Pesan, kunci privat/publik (browing atau diketik nilai kuncinya)
+   1. Pembangkitan kunci privat dan kunci publik yang dapat disimpan dalam file terpisa (misalnya *.pub dan *.pri)
+   2. Enkripsi/dekripsi file. Pesan, kunci privat/publik (browing atau diketik nilai kuncinya)
 2. Program memiliki editor tempat pengguna mengetikkan pesan atau meng-copy paste teks ke editor tersebut.
 3. Program dapat mengenkripsi plainteks dengan RSA, ElGamal, Paillier, ECC
 4. Program dapat mendekripsi cipherteks dengan RSA, ElGamal, Paillier, ECC
