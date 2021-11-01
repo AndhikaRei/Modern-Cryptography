@@ -20,19 +20,19 @@ class RSA_Crypt():
         p = sympy.randprime(pow(2, key_size - 1) + 1, pow(2, key_size) - 1)
         q = sympy.randprime(pow(2, key_size - 1) + 1, pow(2, key_size) - 1)
 
-        # Calculate n and totient(p, q).
+        # Calculate n and totient(n).
         n = p * q
-        totient = self.math.totient(p, q)
+        totient_n = (p - 1) * (q - 1)
 
-        # Create e such as coprime with totient(p, q).
+        # Create e such as coprime with totient(n).
         finish = False
         while(not(finish)):
             e = random.randrange(pow(2, key_size - 1), pow(2, key_size))
-            if(self.math.isCoprime(e, totient)):
+            if(self.math.isCoprime(e, totient_n)):
                 finish = True
         
         # Calculate d.
-        d = self.math.modinv(e, totient)
+        d = self.math.modinv(e, totient_n)
 
         # Set e, d, n
         self.e = e
