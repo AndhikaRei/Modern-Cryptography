@@ -15,12 +15,12 @@ def plaintextToArrInt(plaintext:str, max_length:int) -> List[int]:
         block.append(int(ascii_string))
     return block
 
-def ciphertextToArrInt(plaintext:str, max_length:int) -> List[int]:
+def ciphertextToArrInt(ciphertext:str, max_length:int) -> List[int]:
     """
     Helper for elgamal.
-    Convert ciphertext to array of integer for encrypt
+    Convert ciphertext to array of integer for decrypt.
     """
-    equalSizedStr = [plaintext[i:i+max_length] for i in range(0, len(plaintext), max_length)]
+    equalSizedStr = [ciphertext[i:i+max_length] for i in range(0, len(ciphertext), max_length)]
     block = [int(ciphertext) for ciphertext in equalSizedStr]
     return block
 
