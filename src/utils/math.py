@@ -28,3 +28,9 @@ class Math:
     
     def isCoprime(self, x: int, y: int) -> bool:
         return self.gcd(x, y) == 1
+    
+    def isPrime(self, a:int) -> bool:
+        for n in range(2,int(a**1/2)+1):
+            if a % n == 0:
+                return False
+        return True
