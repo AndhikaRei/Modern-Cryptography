@@ -31,18 +31,14 @@ class Paillier_Crypt():
         lmd = self.math.lcm(p - 1, q - 1)
 
         # Generate random integer
-        g = n
-        while(self.math.isCoprime(g, n_square)):
-            g = random.randint(2000, 3000)
+        g = random.randint(1, pow(n, 2) - 1)
 
         # Calculate miu
-        L = lambda x : x - 1 // n
-        # miu = self.math.modinv(, n)
-
-        print(libnum.invmod(L(pow(g, lmd, n_square)), n))
+        L = lambda x : (x - 1) // n
+        miu = self.math.modinv(L(pow(g, lmd, n_square)), n)
 
         # Return g, n, lambda, miu.
-        return g, n, lmd, 0
+        return g, n, lmd, miu
 
     def encrypt(self, plain_text: str, g: int, n: int) -> str:
         max_length = (len(str(plain_text)) - 1) // 3
@@ -64,9 +60,23 @@ class Paillier_Crypt():
     
     # TODO: implement encrypt function, implement ciphertext to block
     def decrypt(self, cipher_text: str, lmd: int, miu: int) -> str:
-        pass
+        max_length = len(str(pow(n, 2)))
+        num_alphabet = (len(str(n))-1)//3
+        messages_int = utils.ciphertextToArrInt(cipher_text, max_length)
+
+        L = lambda x : (x - 1) // n
+        
+        res = []
+        for c in messages_int:
+            temp = (L(pow(c, lmd, pow(n, 2))) * miu) % n
+            res.append(str(temp).rjust(num_alphabet*3, "0"))
+
+        plaintext = utils.ArrStrToPlaintext(res, num_alphabet)
+
+        return plaintext
 
 if __name__ == "__main__":
     paillier = Paillier_Crypt()
     g, n, lmd, miu = paillier.generate_paillier_key(128)
-    print(g, n, lmd, miu)
+    plain_text = paillier.encrypt('hello world', g, n)
+    cipher_text = paillier.decrypt(plain_text, lmd, miu)
