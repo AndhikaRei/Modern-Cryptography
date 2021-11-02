@@ -3,7 +3,6 @@ from typing import Tuple, List
 
 def plaintextToArrInt(plaintext:str, max_length:int) -> List[int]:
     """
-    Helper for elgamal.
     Convert plaintext to array of integer for encrypt.
     """
     equalSizedStr = [plaintext[i:i+max_length] for i in range(0, len(plaintext), max_length)]
@@ -17,7 +16,6 @@ def plaintextToArrInt(plaintext:str, max_length:int) -> List[int]:
 
 def ciphertextToArrInt(ciphertext:str, max_length:int) -> List[int]:
     """
-    Helper for elgamal.
     Convert ciphertext to array of integer for decrypt.
     """
     equalSizedStr = [ciphertext[i:i+max_length] for i in range(0, len(ciphertext), max_length)]
@@ -26,7 +24,6 @@ def ciphertextToArrInt(ciphertext:str, max_length:int) -> List[int]:
 
 def ArrStrToPlaintext(arr_str:List[str], num_alphabet:int)-> str:
     """
-    Helper for elgamal.
     Convert list of plaintext in ascii to string of normal plaintext.
     """
     plaintext = ""
@@ -38,6 +35,17 @@ def ArrStrToPlaintext(arr_str:List[str], num_alphabet:int)-> str:
     return plaintext
 
 
+def ciphertextToArrTupleInt(ciphertext:str, max_length:int) -> List[Tuple[int, int]]:
+    """
+    # Helper for ECEG algorithm.
+    Convert ciphertext to array of tuple(int,int) for decrypt.
+    """
+    max_length_tuple = max_length*2
+    equalSizedTuple = [ciphertext[i:i+max_length_tuple] for i in range(0, len(ciphertext), max_length_tuple)]
+    equalSizedStr = [(tuple[0:max_length],tuple[max_length:max_length*2]) for tuple in equalSizedTuple]
+    block = [(int(tuple[0]),int(tuple[1])) for tuple in equalSizedStr]
+    
+    return block
 
 
     

@@ -20,9 +20,15 @@ class Math:
     def modinv(self, x: int, y: int) -> int:
         gcd, x, _ = self.egcd(x, y)
         if gcd != 1:
-            return Exception('Failed to compute modinv')
+            raise Exception('Failed to compute modinv')
         return x % y
     
+    def modinv2(self, x: int, y: int) -> int:
+        for i in range(y):
+            if (x * i) % y == 1:
+                return i
+        raise Exception('Failed to compute modinv')
+
     def isCoprime(self, x: int, y: int) -> bool:
         return self.gcd(x, y) == 1
 
