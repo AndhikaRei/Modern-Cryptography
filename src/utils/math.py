@@ -7,7 +7,7 @@ class Math:
         return x
     
     def lcm(self, x: int, y: int) -> int:
-        return int((x * y) / self.gcd(x, y))
+        return (x * y) // self.gcd(x, y)
 
     def egcd(self, x: int, y: int) -> Tuple[int, int, int]:
         if x == 0:

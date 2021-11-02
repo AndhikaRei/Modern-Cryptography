@@ -42,13 +42,34 @@ class RSA_Crypt():
         # Return e, d, n.
         return e, d, n
 
-    # TODO: implement encrypt function, implement plaintext to block
     def encrypt(self, plain_text: str, e: int, n: int) -> str:
-        pass
+        max_length = (len(str(plain_text)) - 1) // 3
+        messages_int =  utils.plaintextToArrInt(plain_text, max_length)
+
+        res = []
+        for message in messages_int:
+            temp = pow(message, e, n)
+            res.append(str(temp).rjust(len(str(n)), '0'))
+
+        return "".join(res)
+
     
-    # TODO: implement encrypt function, implement ciphertext to block
     def decrypt(self, cipher_text: str, d: int, n: int) -> str:
-        pass
+        max_length = len(str(n))
+        num_alphabet = (len(str(n))-1)//3
+        messages_int = utils.ciphertextToArrInt(cipher_text, max_length)
+        
+        res = []
+        for message in messages_int:
+            temp = pow(message, d, n)
+            res.append(str(temp).rjust(num_alphabet*3, "0"))
+
+        plaintext = utils.ArrStrToPlaintext(res, num_alphabet)
+
+        return plaintext
 
 if __name__ == "__main__":
-    pass
+    rsa = RSA_Crypt()
+    e, d, n = rsa.generate_rsa_key(32)
+    cipher_text = rsa.encrypt('hello world', e, n)
+    rsa.decrypt(cipher_text, d, n)

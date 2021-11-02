@@ -3,6 +3,7 @@ import sympy
 import random
 import typing
 
+
 class Paillier_Crypt():
     def __init__(self):
         self.math = utils.Math()
@@ -26,28 +27,46 @@ class Paillier_Crypt():
 
         # Calculate n and lambda.
         n = p * q
+        n_square = pow(n, 2)
         lmd = self.math.lcm(p - 1, q - 1)
 
         # Generate random integer
         g = n
-        while(self.math.gcd(g, pow(n, 2)) != 1):
-            g = random.randint(n + 1, pow(n, 2) - 1)
+        while(self.math.isCoprime(g, n_square)):
+            g = random.randint(2000, 3000)
 
         # Calculate miu
         L = lambda x : x - 1 // n
-        miu = self.math.modinv(L(pow(g, lmd, pow(n, 2))), n)
+        # miu = self.math.modinv(, n)
+
+        print(libnum.invmod(L(pow(g, lmd, n_square)), n))
 
         # Return g, n, lambda, miu.
-        return g, n, lmd, miu
+        return g, n, lmd, 0
 
-    # TODO: implement encrypt function, implement plaintext to block
-    def encrypt(self, plain_text: str, e: int, n: int) -> str:
-        pass
+    def encrypt(self, plain_text: str, g: int, n: int) -> str:
+        max_length = (len(str(plain_text)) - 1) // 3
+        messages_int =  utils.plaintextToArrInt(plain_text, max_length)
+
+        res = []
+        for message in messages_int:
+            # Find r
+            while(True):
+                r = random.randint(0, n - 1)
+                if(self.math.isCoprime(r, n)):
+                    break
+            
+            n_square = pow(n, 2)
+            temp = (pow(g, message, n_square) * pow(r, n, n_square)) % n_square
+            res.append(str(temp).rjust(len(str(n_square)), '0'))
+
+        return "".join(res)
     
     # TODO: implement encrypt function, implement ciphertext to block
-    def decrypt(self, cipher_text: str, d: int, n: int) -> str:
+    def decrypt(self, cipher_text: str, lmd: int, miu: int) -> str:
         pass
 
 if __name__ == "__main__":
     paillier = Paillier_Crypt()
-    paillier.generate_paillier_key(128)
+    g, n, lmd, miu = paillier.generate_paillier_key(128)
+    print(g, n, lmd, miu)
