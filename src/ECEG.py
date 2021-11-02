@@ -28,7 +28,7 @@ class ECC:
 	N: int
 		banyaknya anggota grup yang dimiliki.
 	x: int
-		kunci privat, dipilih dari selang [1, p 1]
+		kunci privat, dipilih dari selang [1, p-1]
 	Q: Tuple[int,int] 
 		kunci publik, adalah hasil kali antara x dan titik basis B: Q = x.B
 	"""
@@ -48,17 +48,17 @@ class ECC:
 		self.Q = Q
 		self.math = utils.Math()
 	
-	def fullyRandomizeAttribute(self):
+	def fullyRandomizeAttribute(self, p_size:int = 14):
 		"""
 		Fully randomized attribute.
 		"""
 
-		self.generateEllipticCurve(is_random=True, p_size=12)
+		self.generateEllipticCurve(is_random=True, p_size=p_size)
 		self.generateGroup(is_random=True)
 		self.generateBasis(is_random=True)
 		self.generateKey(is_random=True)
 				
-	def generateEllipticCurve(self, a:int=0, b:int=0, p:int=0, is_random:bool=True, p_size:int=10)->None:
+	def generateEllipticCurve(self, a:int=0, b:int=0, p:int=0, is_random:bool=True, p_size:int=12)->None:
 		"""
 		Generate Elliptic Curve basic parameter
 		"""
@@ -206,6 +206,52 @@ class ECC:
 		"""
 		return (titik[0], -1* titik[1] % self.p)
 	
+	def readKey(self, key:str, type:str):
+		"""
+		Read key from string in file.
+		"""
+
+		# Read the string.
+		res = key
+
+		# Modify the key based on file extension.
+		if (type =="pub"):
+			# .pub
+			# a b p Bx By Qx Qy
+			a = int(res.split(" ")[0])
+			b = int(res.split(" ")[1])
+			p = int(res.split(" ")[2])
+			Bx = int(res.split(" ")[3])
+			By = int(res.split(" ")[4])
+			B = (Bx, By)
+			Qx = int(res.split(" ")[5])
+			Qy = int(res.split(" ")[6])
+			Q = (Qx, Qy)
+
+			self.generateEllipticCurve(a=a, b=b, p=p, is_random=False)
+			self.generateGroup(is_random=True)
+			self.generateBasis(is_random=False, B = B)
+			self.generateKey(is_random=False, Q = Q)
+			
+		else:
+			# .pri
+			# a b p Bx By d
+
+			a = float(res.split(" ")[0])
+			b = float(res.split(" ")[1])
+			p = float(res.split(" ")[2])
+			Bx = float(res.split(" ")[3])
+			By = float(res.split(" ")[4])
+			B = (Bx, By)
+			d = float(res.split(" ")[5])
+
+			self.generateEllipticCurve(a=a, b=b, p=p, is_random=False)
+			self.generateGroup(is_random=True)
+			self.generateBasis(is_random=False, B = B)
+			self.generateKey(is_random=False, d = d)
+
+
+		
 	def loadKey(self, filename:str) -> None:
 		"""
 		Load key from .pri and .pub file.
@@ -219,14 +265,14 @@ class ECC:
 			if (os.path.splitext(filename)[1].lower() == ".pub"):
 				# .pub
         		# a b p Bx By Qx Qy
-				a = float(res.split(" ")[0])
-				b = float(res.split(" ")[1])
-				p = float(res.split(" ")[2])
-				Bx = float(res.split(" ")[3])
-				By = float(res.split(" ")[4])
+				a = int(res.split(" ")[0])
+				b = int(res.split(" ")[1])
+				p = int(res.split(" ")[2])
+				Bx = int(res.split(" ")[3])
+				By = int(res.split(" ")[4])
 				B = (Bx, By)
-				Qx = float(res.split(" ")[5])
-				Qy = float(res.split(" ")[6])
+				Qx = int(res.split(" ")[5])
+				Qy = int(res.split(" ")[6])
 				Q = (Qx, Qy)
 
 				self.generateEllipticCurve(a=a, b=b, p=p, is_random=False)
@@ -281,6 +327,7 @@ class ECC:
 			ext = ".pri"
 			content = str(self.a) + " " + str(self.b) + " " + str(self.p) + " "
 			content = content + str(self.B[0]) + " " + str(self.B[1]) + " "
+			content = content + str(self.d)
 		
 		# Writing file to directory.
 		filename += ext
@@ -290,6 +337,20 @@ class ECC:
 			f.write(content)
 		except :
 			raise Exception("Failed when writing file")
+
+	def getKeyFormatted(self, type:str):
+		"""
+		Formatted key for file.
+		"""
+		content = str(self.a) + " " + str(self.b) + " " + str(self.p) + " "
+		content = content + str(self.B[0]) + " " + str(self.B[1]) + " "
+		if (type == "pub"):
+			content = content + str(self.Q[0]) + " " + str(self.Q[1]) 
+		else:
+			content = content + str(self.d)
+
+		return content
+	
 
 	def printDetail(self):
 		"""
@@ -330,7 +391,8 @@ class ECEG:
 
 		for char in plain_text:
 			# Encrypt.
-			pm = self.ecc.group[ord(char)]
+			index = self.ecc.N - 1 - ord(char)
+			pm = self.ecc.group[index]
 			k = random.randint(2, self.ecc.p - 2)
 			a = self.ecc.perkalianTitik(k, self.ecc.B)
 			b = self.ecc.penjumlahanTitik(pm, self.ecc.perkalianTitik(k, self.ecc.Q))
@@ -383,7 +445,8 @@ class ECEG:
 			first_equation = self.ecc.perkalianTitik(self.ecc.d, a)
 			pm = self.ecc.penjumlahanTitik(b, self.ecc.negative(first_equation))
 			ascii = self.ecc.group.index(pm)
-			plaintext += chr(ascii)
+			ascii_true = self.ecc.N - 1 - ascii
+			plaintext += chr(ascii_true)
 
 		return plaintext
 

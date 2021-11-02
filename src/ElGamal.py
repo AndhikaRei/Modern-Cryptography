@@ -23,7 +23,7 @@ class ElGamalKeygen:
 		self.private_key = private_key
 		self.math = utils.Math()
 
-	def generateKey(self, is_random:bool=True, key_size:int=11, p:int=0) -> None:
+	def generateKey(self, is_random:bool=True, key_size:int=28, p:int=0) -> None:
 		"""
 		Generate public and private key from parameter given. 
 		"""
@@ -175,7 +175,7 @@ def testElgamal():
 	# Generate key.
 	print("Generating key")
 	key = ElGamalKeygen()
-	key.generateKey(is_random=True, key_size=21)
+	key.generateKey(is_random=True, key_size=32)
 	print("Public: ", end="")
 	print(key.public_key)
 	print("Private: ", end="")

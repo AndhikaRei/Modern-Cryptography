@@ -1,0 +1,15 @@
+<div class="border-right" id="sidebar-wrapper">
+	<div class="sidebar-heading text-center">
+		<img src="{{ url_for('static', filename='images/Crypto Logo.png') }}" alt=""
+			class="my-4 logo-crypto" />
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('elgamal') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'elgamal'}}"> Elgamal </a>
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('elgamalKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'elgamal_key'}}"> Generate Elgamal key </a>
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('ecegKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'eceg_key'}}"> Generate ECEG key </a>
+	</div>
+</div>

@@ -1,0 +1,178 @@
+{% extends 'layouts/base.html' %} 
+{% set active_page = 'eceg_key' %}
+
+{% block title %} 
+	Generate Elliptic Curve Elgamal [ECEG]
+{% endblock %}
+
+{% block heading %} 
+		<h2 class="crypto-title">Generate Key Elgamal Cipher</h2>
+		<p class="crypto-subtitle"> 
+			Generating Elliptic Curve Elgamal public, private key, and elliptic curve parameter. <br>
+			&nbsp;&nbsp;&nbsp;&nbsp; 1. If not randomized you must provide a, b, p, B&#40;x,y&#41;. Everything
+			else will be randomized. <br>
+			&nbsp;&nbsp;&nbsp;&nbsp; 2. If randomized, you only need to provide bit length of the primary number [p], everything else will be randomized. <br>
+			&nbsp;&nbsp;&nbsp;&nbsp; 3. It's better to choose random input because manual input requires you to think a lot first.
+		</p>
+{% endblock %}
+
+{% block content %}
+	<div class="row mt-3">
+		<div class="col-12 mt-2">
+			<form action="{{ url_for('ecegKeyGenerate') }}" enctype="application/x-www-form-urlencoded" method="POST">
+				<div class="card">
+					<div class="card-body">
+						<div class="row">
+							{% if error %}
+								<div class="row col-12 mx-2 d-block">	
+									<div class="alert alert-danger alert-dismissible fade show" role="alert">
+											<i class="fa fa-times"> {{ error }}</i>
+											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+									</div>
+								</div>
+							{% endif %}
+							<div class="col-md-12">
+								<div class="form-group">
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="randomizing" id="keyrandom"
+											value="random" {% if random %} checked {% endif %}>
+										<label class="form-check-label" for="randomizing">Randomized</label>
+									</div>
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="randomizing" id="keymanual"
+											value="manual" {% if not random %} checked {% endif %}>
+										<label class="form-check-label" for="randomizing">Manual input</label>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-12" id="randomInput">
+								<div class="form-group">
+									<label for="bitLength">Bit length</label>
+									<input type="number" 
+									 value={% if form and form.bitLength %}{{ form.bitLength }}{% else %} 12 {% endif %}
+									 class="form-control" id="bitLength" aria-describedby="bitLength" name="bitLength" />
+								</div>
+							</div>
+							<div class="col-md-12" id="manualInput">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="a">a - Elliptic Curve Params</label>
+											<input type="number" value='{{ form.a if form }}' class="form-control" id="a"
+												aria-describedby="a" name="a" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="b">b - Elliptic Curve Params</label>
+											<input type="number" value='{{ form.b if form }}' class="form-control" id="b"
+												aria-describedby="b" name="b" />
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="p">p - Primary number </label>
+											<input type="number" value='{{ form.p if form }}' class="form-control" id="p"
+												aria-describedby="p" name="p" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="Bx">Bx - Titik basis pada sumbu x</label>
+											<input type="number" value='{{ form.Bx if form }}' class="form-control" id="Bx"
+												aria-describedby="Bx" name="Bx" />
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="form-group">
+											<label for="By">By - Titik basis pada sumbu y</label>
+											<input type="number" value='{{ form.By if form }}' class="form-control" id="By"
+												aria-describedby="By" name="By" />
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row mt-2">
+					<div class="col">
+						<button type="submit" class="mb-3 btn btn-success btn-block px-5"> Generate Now </button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	{% if result_public_key %}
+		<div class="row my-4">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body" style="padding-bottom: 0.5rem;">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="publicName">Filename</label>
+									<input type="text" class="form-control" id="publicName" 
+									aria-describedby="publicName" name="publicName" placeholder="input name without format" />
+								</div>
+							</div>
+							<div class="col-md-12">
+
+								<div class="form-group">
+									<label for="public-key">Public key</label>
+									<textarea name="public-key" readonly id="public-key" cols="30"
+										rows="3" class="form-control">{{ result_public_key }}</textarea>
+									<small class="text-muted"> Format - a b p Bx By Qx Qy </small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row mt-2">
+					<div class="col">
+						<button id="download-ciphertext" onclick="downloadFile(resultPublic.value, 'pub')"
+							class="btn btn-secondary btn-block"> Download Public key</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}	
+	
+	{% if result_private_key %}
+		<div class="row my-4">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-body" style="padding-bottom: 0.5rem;">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="privateName">Filename</label>
+									<input type="text" class="form-control" id="privateName"
+										aria-describedby="privateName" name="privateName" placeholder="input name without format" />
+								</div>
+							</div>
+							<div class="col-md-12">
+								<div class="form-group">
+									<label for="private-key">Private key</label>
+									<textarea name="private-key" readonly id="private-key" cols="30"
+										rows="4" class="form-control">{{ result_private_key }}</textarea>
+									<small class="text-muted"> Format - a b p Bx By d </small>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row mt-2">
+					<div class="col">
+						<button id="download-ciphertext" onclick="downloadFile(resultPrivate.value, 'pri')"
+							class="btn btn-secondary btn-block"> Download Private key </button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endif %}	
+	
+{% endblock %}

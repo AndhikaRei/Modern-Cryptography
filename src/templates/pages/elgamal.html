@@ -1,0 +1,200 @@
+{% extends 'layouts/base.html' %} 
+{% set active_page = 'elgamal' %}
+
+{% block title %} 
+	ElGamal 
+{% endblock %}
+
+{% block heading %} 
+	<h2 class="crypto-title">ElgGamal</h2>
+	<p class="crypto-subtitle"> 
+		ElGamal encryption is a public-key cryptosystem. It uses asymmetric key
+		encryption for communicating between two parties and encrypting the message. This cryptosystem
+		is based on the difficulty of finding discrete logarithm 
+	</p>
+{% endblock %}
+
+{% block content %}
+	<ul class="nav nav-pills" id="cryptoTab" role="tablist">
+		<li class="nav-item" role="presentation">
+			<a class="nav-link {{ 'active' if encrypt }}" id="encrypt-tab" data-toggle="tab" href="#encrypt" role="tab"
+				aria-controls="encrypt" aria-selected="false">Encrypt</a>
+		</li>
+		<li class="nav-item" role="presentation">
+			<a class="nav-link {{ 'active' if not encrypt }}" id="decrypt-tab" data-toggle="tab" href="#decrypt"
+				role="tab"
+				aria-controls="decrypt" aria-selected="true">Decrypt</a>
+		</li>
+	</ul>
+	<div class="tab-content" id="myTabContent">
+		<div class="tab-pane fade show {{ 'active' if encrypt }}" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
+			<div class="row mt-3">
+				<div class="col-12 mt-2">
+					<form action="/elgamal-cipher/encrypt" enctype="multipart/form-data" method="POST">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									{% if error %}
+										<div class="row col-12 mx-2 d-block">	
+											<div class="alert alert-danger alert-dismissible fade show" role="alert">
+													<i class="fa fa-times"> {{ error }}</i>
+													<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+											</div>
+										</div>
+									{% endif %}
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="file-plaintext">File Plaintext</label>
+											<input type="file" accept=".txt" class="form-control pt-1" id="file-plaintext" aria-describedby="file-plaintext" name="file-plaintext"/>
+											<small class="text-muted"> Pilih file txt untuk plaintext - OPSIONAL </small>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="plaintext">Plaintext</label>
+											<textarea name="plaintext" id="plaintext" cols="30" rows="4"
+												class="form-control">{{ form.plaintext if form }}</textarea>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="file-public-key">File Public key</label>
+											<input type="file" accept=".pub" class="form-control pt-1" id="file-public-key"
+												aria-describedby="file-public-key" name="file-public-key" />
+											<small class="text-muted"> Pilih file pub untuk public key - DISARANKAN </small>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="key-encrypt">Public key</label>
+											<textarea  name="key" id="key-encrypt" cols="30" rows="4"
+												class="form-control">{{ form.key if form }}</textarea>
+											<small class="text-muted"> Format - y g p </small>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row mt-2">
+							<div class="col">
+								<button type="submit" class="btn btn-success btn-block px-5"> Encrypt Now </button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		{% if result_ciphertext %}
+			<div class="row my-4">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body" style="padding-bottom: 0.5rem;">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="result-ciphertext">Ciphertext</label>
+										<textarea name="result-ciphertext" readonly id="result-ciphertext" cols="30"
+											rows="4" class="form-control">{{ result_ciphertext }}</textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col">
+							<button id="download-ciphertext" onclick="downloadFile(resultCipher.value)"
+								class="btn btn-secondary btn-block"> Download Ciphertext</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}	
+		</div>
+		<div class="tab-pane fade show {{ 'active' if not encrypt }}" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab">
+			<div class="row mt-3">
+				<div class="col-12 mt-2">
+					<form action="/elgamal-cipher/decrypt" enctype="multipart/form-data" method="POST">
+						<div class="card">
+							<div class="card-body">
+								<div class="row">
+									{% if error %}
+										<div class="row col-12 mx-2 d-block">	
+											<div class="alert alert-danger alert-dismissible fade show" role="alert">
+													<i class="fa fa-times"> {{ error }}</i>
+													<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+														<span aria-hidden="true">&times;</span>
+													</button>
+											</div>
+										</div>
+									{% endif %}
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="thumbnails">File Ciphertext</label>
+											<input type="file" accept=".txt" class="form-control pt-1" id="file-ciphertext"
+												aria-describedby="file-ciphertext" name="file-ciphertext" />
+											<small class="text-muted"> Pilih file txt untuk ciphertext - OPSIONAL </small>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="ciphertext">Ciphertext</label>
+											<textarea name="ciphertext" id="ciphertext" cols="30" rows="4"
+												class="form-control">{{ form.ciphertext if form }}</textarea>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="file-private-key">File Private key</label>
+											<input type="file" accept=".pri" class="form-control pt-1" id="file-private-key"
+												aria-describedby="file-private-key" name="file-private-key" />
+											<small class="text-muted"> Pilih file pri untuk public key - DISARANKAN </small>
+										</div>
+									</div>
+									<div class="col-md-12">
+										<div class="form-group">
+											<label for="key-decrypt">Private key</label>
+											<textarea name="key" id="key-decrypt" cols="30" rows="4"
+												class="form-control">{{ form.key if form }}
+											</textarea>
+											<small class="text-muted"> Format - x p </small>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="row mt-2">
+							<div class="col">
+								<button type="submit" class="btn btn-success btn-block px-5"> Decrypt Now </button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+			{% if result_plaintext %}
+			<div class="row my-4">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body" style="padding-bottom: 0.5rem;">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label for="result-plaintext">Plaintext</label>
+										<textarea name="result-plaintext" readonly id="result-plaintext" cols="30" rows="4" class="form-control">{{ result_plaintext.plaintext}} </textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2">
+						<div class="col">
+							<button id="download-plaintext" class="btn btn-secondary btn-block"
+								onclick="downloadFile(resultPlain.value)"> Download Plaintext</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}
