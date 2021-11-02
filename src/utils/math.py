@@ -6,6 +6,9 @@ class Math:
         while(y):
             x, y = y, x % y
         return x
+    
+    def lcm(self, x: int, y: int) -> int:
+        return (x * y) // self.gcd(x, y)
 
     def egcd(self, x: int, y: int) -> Tuple[int, int, int]:
         if x == 0:
