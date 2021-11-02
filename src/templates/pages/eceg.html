@@ -1,16 +1,15 @@
 {% extends 'layouts/base.html' %} 
-{% set active_page = 'elgamal' %}
+{% set active_page = 'eceg' %}
 
 {% block title %} 
-	ElGamal 
+	ECEG
 {% endblock %}
 
 {% block heading %} 
-	<h2 class="crypto-title">ElGamal</h2>
+	<h2 class="crypto-title">Elliptic Curve Elgamal</h2>
 	<p class="crypto-subtitle"> 
-		ElGamal encryption is a public-key cryptosystem. It uses asymmetric key
-		encryption for communicating between two parties and encrypting the message. This cryptosystem
-		is based on the difficulty of finding discrete logarithm 
+		ElGamal Elliptic Curve Cryptography is a public key cryptography analogue of the ElGamal
+		encryption schemes which uses Elliptic Curve Discrete Logarithm Problem
 	</p>
 {% endblock %}
 
@@ -30,7 +29,7 @@
 		<div class="tab-pane fade show {{ 'active' if encrypt }}" id="encrypt" role="tabpanel" aria-labelledby="encrypt-tab">
 			<div class="row mt-3">
 				<div class="col-12 mt-2">
-					<form action="/elgamal/encrypt" enctype="multipart/form-data" method="POST">
+					<form action="/eceg/encrypt" enctype="multipart/form-data" method="POST">
 						<div class="card">
 							<div class="card-body">
 								<div class="row">
@@ -153,7 +152,7 @@
 		<div class="tab-pane fade show {{ 'active' if not encrypt }}" id="decrypt" role="tabpanel" aria-labelledby="decrypt-tab">
 			<div class="row mt-3">
 				<div class="col-12 mt-2">
-					<form action="/elgamal/decrypt" enctype="multipart/form-data" method="POST">
+					<form action="/eceg/decrypt" enctype="multipart/form-data" method="POST">
 						<div class="card">
 							<div class="card-body">
 								<div class="row">

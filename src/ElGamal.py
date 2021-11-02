@@ -44,6 +44,19 @@ class ElGamalKeygen:
 		self.public_key = (y, g, p)
 		self.private_key = (x, p)
 	
+	def readKey(self, key:str, type:str) -> None:
+		"""
+		Read key from text input.
+		"""
+		try:
+			# Modify the key based on file extension.
+			if (type == "pub"):
+				self.public_key = (int(key.split(" ")[0]), int(key.split(" ")[1]), int(key.split(" ")[2]))
+			else:
+				self.private_key = (int(key.split(" ")[0]), int(key.split(" ")[1]))
+		except :
+			raise Exception("INvalid key format")
+
 	def loadKey(self, filename:str) -> None:
 		"""
 		Load key from .pri and .pub file.

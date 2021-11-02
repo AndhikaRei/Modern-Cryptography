@@ -52,7 +52,7 @@ if (keyrandomInput) {
 # Function and Procedure declaration
 --------------------------------------------------------------*/
 
-// Function for downloading decrypted or encrypted data.
+// Function for downloadingkey.
 function downloadFile(data, type) {
     let filename = Date.now();
 
