@@ -42,6 +42,30 @@ class RSA_Crypt():
         # Return e, d, n.
         return e, d, n
 
+    def generate_rsa_key_manual(self, p, q, e):
+        if(not(self.math.isPrime(p))):
+            raise Exception('p is not prime')
+        if(not(self.math.isPrime(q))):
+            raise Exception('q is not prime')
+        if(self.math.isCoprime(e, (p - 1)*(q - 1))):
+            raise Exception('e not coprime with totient(n)')
+
+        # Calculate n and totient(n).
+        n = p * q
+        totient_n = (p - 1) * (q - 1)
+        
+        # Calculate d.
+        d = self.math.modinv(e, totient_n)
+
+        # Set e, d, n
+        self.e = e
+        self.d = d
+        self.n = n
+
+        # Return e, d, n.
+        return e, d, n
+
+
     def encrypt(self, plain_text: str, e: int, n: int) -> str:
         max_length = (len(str(plain_text)) - 1) // 3
         messages_int =  utils.plaintextToArrInt(plain_text, max_length)

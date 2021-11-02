@@ -12,4 +12,10 @@
 	<div class="list-group list-group-flush">
 		<a href="{{ url_for('ecegKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'eceg_key'}}"> Generate ECEG key </a>
 	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('rsaKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'rsa_key'}}"> Generate RSA key </a>
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('paillierKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'pailler_key'}}"> Generate Paillier key </a>
+	</div>
 </div>

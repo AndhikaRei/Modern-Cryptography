@@ -4,6 +4,8 @@ from werkzeug.datastructures import FileStorage
 
 from ElGamal import ElGamal_Crypt, ElGamalKeygen
 from ECEG import ECC, ECEG
+from RSA import RSA_Crypt
+from Paillier import Paillier_Crypt
 
 
 # Flask Configuration.
@@ -165,6 +167,124 @@ def ecegKeyGenerate():
 	else:
 		# Render default webpage. 
 		return redirect(url_for('ecegKey'))
+
+"""
+--------------------------------------------------------------
+# Route for RSA
+--------------------------------------------------------------
+"""
+# Index route.
+@app.route('/rsa-gen-key')
+def rsaKey():
+	return render_template('pages/rsakey.html', random=True)
+
+# Generate key route.
+@app.route('/rsa-gen-key/generate', methods=['POST', 'GET'])
+def rsaKeyGenerate():
+	if request.method == 'POST':
+		# Get the request payload.
+		try:
+			# Instantiation.
+			rsa = RSA_Crypt()
+			choice = request.form["randomizing"]
+
+			if (choice == "random"):
+				isRandom = True
+				keySize = int(request.form["keySize"])
+				
+				# Key generation.
+				e, d, n = rsa.generate_rsa_key(keySize)
+			else:
+				isRandom = False
+				p = int(request.form["p"])
+				q = int(request.form["q"])
+				e = int(request.form["e"])
+
+				# Key generation.
+				e, d, n = rsa.generate_rsa_key_manual(p, q, e)
+			
+			# Formatting the result.
+			result_public_key = "{} {}".format(e, n)
+			result_private_key = "{} {}".format(d, n)
+
+			return render_template(
+				'pages/rsakey.html', 
+				random=isRandom, 
+				form = request.form, 
+				result_public_key=result_public_key, 
+				result_private_key = result_private_key
+			)
+
+		except (Exception) as e:
+			# Render error webpage.
+			return render_template(
+				'pages/rsakey.html', 
+				random=isRandom,
+				error = e, 
+				form = request.form
+			)
+	else:
+		# Render default webpage. 
+		return redirect(url_for('rsaKey'))
+
+"""
+--------------------------------------------------------------
+# Route for Paillier
+--------------------------------------------------------------
+"""
+# Index route.
+@app.route('/paillier-gen-key')
+def paillierKey():
+	return render_template('pages/paillierkey.html', random=True)
+
+# Generate key route.
+@app.route('/rsa-gen-key/generate', methods=['POST', 'GET'])
+def paillierKeyGenerate():
+	if request.method == 'POST':
+		# Get the request payload.
+		try:
+			# Instantiation.
+			paillier = Paillier_Crypt()
+			choice = request.form["randomizing"]
+
+			if (choice == "random"):
+				isRandom = True
+				keySize = int(request.form["keySize"])
+				
+				# Key generation.
+				g, n, lmd, miu = paillier.generate_paillier_key(keySize)
+			else:
+				isRandom = False
+				p = int(request.form["p"])
+				q = int(request.form["q"])
+				g = int(request.form["g"])
+
+				# Key generation.
+				g, n, lmd, miu = paillier.generate_paillier_key_manual(p, q, g)
+			
+			# Formatting the result.
+			result_public_key = "{} {}".format(g, n)
+			result_private_key = "{} {}".format(lmd, miu)
+
+			return render_template(
+				'pages/paillierkey.html', 
+				random=isRandom, 
+				form = request.form, 
+				result_public_key=result_public_key, 
+				result_private_key = result_private_key
+			)
+
+		except (Exception) as e:
+			# Render error webpage.
+			return render_template(
+				'pages/paillierkey.html', 
+				random=isRandom,
+				error = e, 
+				form = request.form
+			)
+	else:
+		# Render default webpage. 
+		return redirect(url_for('paillierKey'))
 
 		
 
