@@ -217,7 +217,7 @@ def ecegKeyGenerate():
 
 """
 --------------------------------------------------------------
-# Route for RSA
+# Route for RSA Keygen
 --------------------------------------------------------------
 """
 # Index route.
@@ -276,7 +276,7 @@ def rsaKeyGenerate():
 
 """
 --------------------------------------------------------------
-# Route for Paillier
+# Route for Paillier Keygen
 --------------------------------------------------------------
 """
 # Index route.
@@ -333,6 +333,72 @@ def paillierKeyGenerate():
 		# Render default webpage. 
 		return redirect(url_for('paillierKey'))
 
+"""
+--------------------------------------------------------------
+# Route for RSA
+--------------------------------------------------------------
+"""
+# Index route.
+@app.route('/rsa')
+def rsa():
+	return render_template('pages/rsa.html', encrypt=True)
+
+# Encrypt route
+@app.route('/rsa/encrypt', methods=['POST', 'GET'])
+def rsaEncrypt():
+	if request.method == 'POST':
+		# Get the request payload.
+		try:
+			# Get the payload.
+			plaintext = request.form['plaintext']
+			public_key = request.form['key'].split(' ')
+
+			rsa = RSA_Crypt()
+			ciphertext = rsa.encrypt(plaintext, int(public_key[0]), int(public_key[1]))
+
+			return render_template(
+				'pages/rsa.html', 
+				encrypt=True, 
+				form = request.form, 
+				result_ciphertext=ciphertext
+			)
+		
+		except (Exception) as e:
+			# Render error webpage.
+			return render_template('pages/rsa.html', encrypt=True,
+				error = e, form = request.form)
+	else:
+		# Render default webpage. 
+		return redirect(url_for('rsa'))
+
+# Decrypt route.
+@app.route('/rsa/decrypt', methods=['POST', 'GET'])
+def rsaDecrypt():
+	if request.method == 'POST':
+	# Get the request payload.
+		try:
+			# Get the payload.
+			ciphertext = request.form['ciphertext']
+			private_key = request.form['key'].split(' ')
+
+			rsa = RSA_Crypt()
+			plain_text = rsa.decrypt(ciphertext, int(private_key[0]), int(private_key[1]))
+			
+			return render_template(
+				'pages/rsa.html', 
+				encrypt=False, 
+				form = request.form, 
+				result_plaintext=plain_text
+			)
+		
+		except (Exception) as e:
+			# Render error webpage.
+			return render_template('pages/rsa.html', encrypt=True,
+				error = e, form = request.form)
+	else:
+		# Render default webpage. 
+		return redirect(url_for('rsa'))
+
 
 """
 --------------------------------------------------------------
@@ -374,8 +440,8 @@ def ecegEncrypt():
 		return redirect(url_for('elgamal'))
 
 # Decrypt route.
-@app.route('/elgamal/decrypt', methods=['POST', 'GET'])
-def elgamalDecrypt():
+@app.route('/eceg/decrypt', methods=['POST', 'GET'])
+def ecegDecrypt():
 	if request.method == 'POST':
 	# Get the request payload.
 		try:

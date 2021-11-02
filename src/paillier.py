@@ -80,7 +80,6 @@ class Paillier_Crypt():
 
         return "".join(res)
     
-    # TODO: implement encrypt function, implement ciphertext to block
     def decrypt(self, cipher_text: str, lmd: int, miu: int) -> str:
         max_length = len(str(pow(n, 2)))
         num_alphabet = (len(str(n))-1)//3
