@@ -88,10 +88,10 @@ class ElGamalKeygen:
 			raise Exception("Failed when writing file")
 
 class ElGamal_Crypt():
-	def encrypt(self, plain_text: str, public_key:Tuple[int, int, int]) -> str:
+	def encrypt(self, plain_text: str, public_key:Tuple[int, int, int]) -> Tuple[str,str]:
 		"""
 		Encrypt the plaintext using elgamal algorithm. Public key can be generated using ElGamalKeygen
-		class. Return tuple containing two plaintext.
+		class. Return tuple containing two ciphertext.
 		"""
 		# Get the public key.
 		y, g, p = public_key
