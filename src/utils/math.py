@@ -5,6 +5,9 @@ class Math:
         while(y):
             x, y = y, x % y
         return x
+    
+    def lcm(self, x: int, y: int) -> int:
+        return int((x * y) / self.gcd(x, y))
 
     def egcd(self, x: int, y: int) -> Tuple[int, int, int]:
         if x == 0:
@@ -31,9 +34,6 @@ class Math:
 
     def isCoprime(self, x: int, y: int) -> bool:
         return self.gcd(x, y) == 1
-
-    def totient(self, x: int, y: int) -> int:
-        return (x - 1) * (y - 1)
     
     def isPrime(self, a:int) -> bool:
         for n in range(2,int(a**1/2)+1):
