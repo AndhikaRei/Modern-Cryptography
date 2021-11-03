@@ -10,9 +10,18 @@
 		<a href="{{ url_for('eceg') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'eceg'}}"> Elliptic Curve Elgamal [ECEG]</a>
 	</div>
 	<div class="list-group list-group-flush">
+		<a href="{{ url_for('rsa') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'rsa'}}">RSA</a>
+	</div>
+	<div class="list-group list-group-flush">
 		<a href="{{ url_for('elgamalKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'elgamal_key'}}"> Generate Elgamal key </a>
 	</div>
 	<div class="list-group list-group-flush">
 		<a href="{{ url_for('ecegKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'eceg_key'}}"> Generate Elliptic Curve Elgamal [ECEG] key </a>
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('rsaKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'rsa_key'}}"> Generate RSA key </a>
+	</div>
+	<div class="list-group list-group-flush">
+		<a href="{{ url_for('paillierKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'pailler_key'}}"> Generate Paillier key </a>
 	</div>
 </div>

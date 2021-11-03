@@ -17,7 +17,7 @@ class Paillier_Crypt():
         self.miu = miu
 
     def generate_paillier_key(self, key_size) -> typing.Tuple[int, int, int, int]:
-        # Create two prime number, p and q such as pq coprime with totient(p, q).
+        # Create two prime number, p and q such as pq coprime with totient(n).
         finish = False
         while(not(finish)):
             p = sympy.randprime(pow(2, key_size - 1) + 1, pow(2, key_size) - 1)
@@ -30,10 +30,32 @@ class Paillier_Crypt():
         n_square = pow(n, 2)
         lmd = self.math.lcm(p - 1, q - 1)
 
-        # Generate random integer
+        # Generate random integer.
         g = random.randint(1, pow(n, 2) - 1)
 
-        # Calculate miu
+        # Calculate miu.
+        L = lambda x : (x - 1) // n
+        miu = self.math.modinv(L(pow(g, lmd, n_square)), n)
+
+        # Return g, n, lambda, miu.
+        return g, n, lmd, miu
+
+    def generate_paillier_key_manual(self, p, q, g) -> typing.Tuple[int, int, int, int]:
+        if(self.math.isPrime(p)):
+            raise Exception('p is not prime')
+        if(self.math.isPrime(q)):
+            raise Exception('p is not prime')
+        if(not(self.math.isCoprime(p * q, (p - 1)*(q - 1)))):
+            raise Exception('p * q not coprime with totient(n)')
+
+        n = p * q
+        n_square = pow(n, 2)
+        lmd = self.math.lcm(p - 1, q - 1)
+
+        if(g <= 0 or g >= n_square):
+            raise Exception('g must be positive and less than n^2')
+
+        # Calculate miu.
         L = lambda x : (x - 1) // n
         miu = self.math.modinv(L(pow(g, lmd, n_square)), n)
 
@@ -58,7 +80,6 @@ class Paillier_Crypt():
 
         return "".join(res)
     
-    # TODO: implement encrypt function, implement ciphertext to block
     def decrypt(self, cipher_text: str, lmd: int, miu: int) -> str:
         max_length = len(str(pow(n, 2)))
         num_alphabet = (len(str(n))-1)//3
