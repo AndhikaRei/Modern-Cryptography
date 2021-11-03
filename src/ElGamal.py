@@ -1,9 +1,8 @@
 import os
 import random
 import utils
+import sympy
 
-from Crypto.Util import number
-from Crypto.Random import get_random_bytes
 from datetime import datetime
 from typing import Tuple
 
@@ -30,15 +29,16 @@ class ElGamalKeygen:
 		# If generate random key. 
 		if (is_random):
 			# Get the requirement element.
-			p = number.getPrime(key_size, randfunc=get_random_bytes)
+			p = sympy.randprime(pow(2, key_size - 1) + 1, pow(2, key_size) - 1)
 	
 		# Validation.
-		if (not self.math.isPrime(p) or len(str(p)) <= 3):
-			raise Exception("P must be a prime number and greater than 1000")
+		if(not is_random):
+			if (not self.math.isPrime(p) or len(str(p)) <= 3):
+				raise Exception("P must be a prime number and greater than 1000")
 		
 		# Get another element. 
-		g = random.randint(2, p-1)
-		x = random.randint(1, p-1)
+		g = random.randrange(2, p-1)
+		x = random.randrange(2, p-2)
 		y = pow(g, x, p)
 
 		self.public_key = (y, g, p)
