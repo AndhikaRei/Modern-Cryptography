@@ -452,9 +452,9 @@ def paillierDecrypt():
 			)
 			
 			return render_template(
-				'pages/paillier.html', 
-				encrypt=False, 
-				form = request.form, 
+				'pages/paillier.html',
+				encrypt=False,
+				form = request.form,
 				result_plaintext=plain_text
 			)
 		
