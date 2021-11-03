@@ -13,6 +13,9 @@
 		<a href="{{ url_for('rsa') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'rsa'}}">RSA</a>
 	</div>
 	<div class="list-group list-group-flush">
+		<a href="{{ url_for('paillier') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'paillier'}}">Paillier</a>
+	</div>
+	<div class="list-group list-group-flush">
 		<a href="{{ url_for('elgamalKey') }}" class="list-group-item list-group-item-action {{ 'active' if active_page == 'elgamal_key'}}"> Generate Elgamal key </a>
 	</div>
 	<div class="list-group list-group-flush">
