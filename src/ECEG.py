@@ -36,8 +36,8 @@ class ECC:
 	def __init__(self, a:int=0, b:int=0, p:int=0, N:int=0, B:Tuple[int, int]=(0,0), group:List[Tuple[int, int]]=None, x:int=0, Q:Tuple[int,int]=(0,0)) -> None:
 		"""
 		Constructor for ECEGKeygen class.
-
 		"""
+
 		self.a = a
 		self.b = b
 		self.p = p
@@ -124,11 +124,11 @@ class ECC:
 		"""
 		if (is_random):
 			# Generate private key
-			d = random.randint(2, self.p-2)
+			d = random.randint(2, self.p-1)
 
 			# Generate public key.
 			Q = self.perkalianTitik(d, self.B)
-			while (Q[0]==math.inf and Q[1]==math.inf):
+			while ((Q[0]==math.inf and Q[1]==math.inf)):
 				# Generate private key
 				d = random.randint(2, self.p-2)
 
@@ -194,7 +194,7 @@ class ECC:
 		"""
 		Melakukan perkalian titik secara rekursif.
 		"""
-		res = (0,0)
+		res = (math.inf, math.inf)
 		for i in range(k):
 			res = self.penjumlahanTitik(res, titik)
 		
@@ -236,14 +236,13 @@ class ECC:
 		else:
 			# .pri
 			# a b p Bx By d
-
-			a = float(res.split(" ")[0])
-			b = float(res.split(" ")[1])
-			p = float(res.split(" ")[2])
-			Bx = float(res.split(" ")[3])
-			By = float(res.split(" ")[4])
+			a = int(res.split(" ")[0])
+			b = int(res.split(" ")[1])
+			p = int(res.split(" ")[2])
+			Bx =int(res.split(" ")[3])
+			By = int(res.split(" ")[4])
 			B = (Bx, By)
-			d = float(res.split(" ")[5])
+			d = int(res.split(" ")[5])
 
 			self.generateEllipticCurve(a=a, b=b, p=p, is_random=False)
 			self.generateGroup(is_random=True)
@@ -280,18 +279,16 @@ class ECC:
 				self.generateBasis(is_random=False, B = B)
 				self.generateKey(is_random=False, Q = Q)
 
-				
 			elif (os.path.splitext(filename)[1].lower() == ".pri"):
 				# .pri
 				# a b p Bx By d
-
-				a = float(res.split(" ")[0])
-				b = float(res.split(" ")[1])
-				p = float(res.split(" ")[2])
-				Bx = float(res.split(" ")[3])
-				By = float(res.split(" ")[4])
+				a = int(res.split(" ")[0])
+				b = int(res.split(" ")[1])
+				p = int(res.split(" ")[2])
+				Bx = int(res.split(" ")[3])
+				By = int(res.split(" ")[4])
 				B = (Bx, By)
-				d = float(res.split(" ")[5])
+				d = int(res.split(" ")[5])
 
 				self.generateEllipticCurve(a=a, b=b, p=p, is_random=False)
 				self.generateGroup(is_random=True)
@@ -375,12 +372,12 @@ class ECEG:
 		"""
 		Constructor for ECEG class.
 		"""
-		if (ecc is None):
-			ecc = ECC()
-			ecc.fullyRandomizeAttribute()
+		# if (ecc is None):
+		# 	ecc = ECC()
+		# 	ecc.fullyRandomizeAttribute()
 		self.ecc = ecc
 	
-	def encrypt(self, plain_text: str) -> str:
+	def encrypt(self, plain_text: str) -> Tuple[str,str]:
 		"""
 		Encrypt the plaintext using ECEG algorithm. Return tuple containing two ciphertext.
 		"""
@@ -391,8 +388,7 @@ class ECEG:
 
 		for char in plain_text:
 			# Encrypt.
-			index = self.ecc.N - 1 - ord(char)
-			pm = self.ecc.group[index]
+			pm = self.ecc.group[ord(char)]
 			k = random.randint(2, self.ecc.p - 2)
 			a = self.ecc.perkalianTitik(k, self.ecc.B)
 			b = self.ecc.penjumlahanTitik(pm, self.ecc.perkalianTitik(k, self.ecc.Q))
@@ -406,13 +402,13 @@ class ECEG:
 			b2 = str(b[1]).rjust(len(str(self.ecc.p)), "0")
 			complete_b.append(b1+b2)
 		
-		print("=======================")
-		print("Before combined")
-		print("a: ", end="")
-		print(complete_a)
-		print("b: ", end="")
-		print(complete_b)
-		print("=======================")
+		# print("=======================")
+		# print("Before combined")
+		# print("a: ", end="")
+		# print(complete_a)
+		# print("b: ", end="")
+		# print(complete_b)
+		# print("=======================")
 		
 		# Combine a to one string and b to one string.
 		complete_a = "".join(complete_a)
@@ -445,8 +441,7 @@ class ECEG:
 			first_equation = self.ecc.perkalianTitik(self.ecc.d, a)
 			pm = self.ecc.penjumlahanTitik(b, self.ecc.negative(first_equation))
 			ascii = self.ecc.group.index(pm)
-			ascii_true = self.ecc.N - 1 - ascii
-			plaintext += chr(ascii_true)
+			plaintext += chr(ascii)
 
 		return plaintext
 
@@ -459,15 +454,17 @@ def testECC():
 	Ecc.saveKey(False, "yamet")
 
 def testECEG():
+	print("ECEG without loading")
 	# Generating elliptic curve.
 	Ecc = ECC()
-	Ecc.fullyRandomizeAttribute()
+	Ecc.fullyRandomizeAttribute(p_size=12)
 	Ecc.printDetail()
 
 	# Encrypt the message.
 	Ecg = ECEG(Ecc)
 	print("Encrypting the plaintext")
-	plaintext = "abcdefgh"
+	plaintext = '''reihan 
+	karel'''
 	print("The plaintext is ",  plaintext)
 	ciphertext = Ecg.encrypt(plaintext)
 	print("The ciphertext is")
@@ -482,9 +479,43 @@ def testECEG():
 	b = ciphertext[1]
 	plaintext = Ecg.decrypt((a,b))
 	print("The plaintext is ", plaintext)
-	
-	
+
+	# # Saving the key.
+	Ecc.saveKey(True, "ECEG") 
+	Ecc.saveKey(False, "ECEG")
+
+def TestLoad():
+	print("ECEG with loading")
+	# Generating elliptic curve.
+	Ecc = ECC()
+	Ecc.loadKey("ECEG.pub")
+	Ecc.printDetail()
+
+	# Encrypt the message.
+	Ecg = ECEG(Ecc)
+	print("Encrypting the plaintext")
+	plaintext = '''karel
+	reihan'''
+	print("The plaintext is ",  plaintext)
+	ciphertext = Ecg.encrypt(plaintext)
+	print("The ciphertext is")
+	print("a: ", end="")
+	print(ciphertext[0])
+	print("b: ", end="")
+	print(ciphertext[1])
+
+	# Decrypt the message.
+	print("Decrypting the ciphertext")
+	Ecc.loadKey("ECEG.pri")
+	Ecc.printDetail()
+	Ecg = ECEG(Ecc)
+	a = ciphertext[0]
+	b = ciphertext[1]
+	plaintext = Ecg.decrypt((a,b))
+	print("The plaintext is ", plaintext)
+
 # If module is being runned.
 if __name__ == "__main__":
 	# testECC()
 	testECEG()
+	TestLoad()
