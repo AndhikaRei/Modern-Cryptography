@@ -24,18 +24,8 @@ app.config['SECRET_KEY'] = 'mysecret'
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
-		return redirect(url_for('home'))
+		return redirect(url_for('elgamal'))
 
-
-"""
---------------------------------------------------------------
-# Route for Home (Temporary)
---------------------------------------------------------------
-"""
-# Index route.
-@app.route('/')
-def home():
-	return "<h1>Hello world</h1>"
 	
 
 """
@@ -175,14 +165,15 @@ def ecegKey():
 def ecegKeyGenerate():
 	if request.method == 'POST':
 		# Get the request payload.
-		ecegKey = ECC()
 		try:
+			ecegKey = ECC()
 			# Instantiation.
 			choice = request.form["randomizing"]
 
 			if (choice == "random"):
 				isRandom = True
 				bitLength = int(request.form["bitLength"])
+				print(bitLength)
 				ecegKey.fullyRandomizeAttribute(p_size=bitLength)
 				
 			else:
@@ -202,6 +193,7 @@ def ecegKeyGenerate():
 				ecegKey.generateKey(is_random=True)
 
 			# Get the public and provate key in formatted string.
+			ecegKey.printDetail()
 			result_public_key = ecegKey.getKeyFormatted("pub")
 			result_private_key = ecegKey.getKeyFormatted("pri")
 			return render_template('pages/ecegkey.html', random=isRandom, form = request.form, 
@@ -498,25 +490,32 @@ def ecegEncrypt():
 			# Get the payload.
 			plaintext = request.form['plaintext']
 			public_key = request.form['key']
+			print("plaintext: ", plaintext)
+			print("public key: ", public_key)
 
 			# Create key.
 			key = ECC()
 			key.readKey(key=public_key, type="pub")
+			print("Gonna encrypt with these params")
+			key.printDetail()
 
 			# Create crypt object and encrypt the text.
-			elGamal = ElGamal_Crypt()
-			ciphertext = elGamal.encrypt(plaintext, key.public_key)
+			eceg = ECEG(ecc=key)
+			ciphertext = eceg.encrypt(plaintext)
 
-			return render_template('pages/elgamal.html', encrypt=True, form = request.form, 
+			print("the result is")
+			print(ciphertext)
+
+			return render_template('pages/eceg.html', encrypt=True, form = request.form, 
 				result_ciphertext=ciphertext)
 		
 		except (Exception) as e:
 			# Render error webpage.
-			return render_template('pages/elgamal.html', encrypt=True,
+			return render_template('pages/eceg.html', encrypt=True,
 				error = e, form = request.form)
 	else:
 		# Render default webpage. 
-		return redirect(url_for('elgamal'))
+		return redirect(url_for('eceg'))
 
 # Decrypt route.
 @app.route('/eceg/decrypt', methods=['POST', 'GET'])
@@ -528,25 +527,33 @@ def ecegDecrypt():
 			ciphertextA = request.form['ciphertext']
 			ciphertextB = request.form['ciphertext2']
 			private_key = request.form['key']
+			print("private key: ", private_key)
+			print("ciphertext A: ", ciphertextA)
+			print("Ciphertext B: ", ciphertextB)
 
 			# Create key.
-			key = ElGamalKeygen()
+			key = ECC()
 			key.readKey(key=private_key, type="pri")
+			print("Gonna decrypt with these params")
+			key.printDetail()
 
 			# Create crypt object and encrypt the text.
-			elGamal = ElGamal_Crypt()
-			plaintext = elGamal.decrypt((ciphertextA, ciphertextB), key.private_key)
+			eceg = ECEG(ecc=key)
 			
-			return render_template('pages/elgamal.html', encrypt=False, form = request.form, 
+			plaintext = eceg.decrypt((ciphertextA, ciphertextB))
+			print("the result is")
+			print(plaintext)
+			
+			return render_template('pages/eceg.html', encrypt=False, form = request.form, 
 				result_plaintext=plaintext)
 		
 		except (Exception) as e:
 			# Render error webpage.
-			return render_template('pages/elgamal.html', encrypt=True,
+			return render_template('pages/eceg.html', encrypt=False,
 				error = e, form = request.form)
 	else:
 		# Render default webpage. 
-		return redirect(url_for('elgamal'))
+		return redirect(url_for('eceg'))
 
 
 """
