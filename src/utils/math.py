@@ -22,16 +22,26 @@ class Math:
         return gcd, x_res, y_res
 
     def modinv(self, x: int, y: int) -> int:
+        # Work when x and y are coprime
         gcd, x, _ = self.egcd(x, y)
         if gcd != 1:
             raise Exception('Failed to compute modinv')
         return x % y
     
     def modinv2(self, x: int, y: int) -> int:
+        # Naive
         for i in range(y):
             if (x * i) % y == 1:
                 return i
         raise Exception('Failed to compute modinv')
+    
+    def modinv3(self, x: int, y: int) -> int:
+        # Work when x and y are coprime v2
+        x = x % y
+        gcd, x, _ = self.egcd(x, y)
+        if gcd != 1:
+            raise Exception('Failed to compute modinv')
+        return x % y
 
     def isCoprime(self, x: int, y: int) -> bool:
         return self.gcd(x, y) == 1

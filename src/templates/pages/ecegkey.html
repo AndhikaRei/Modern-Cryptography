@@ -12,7 +12,9 @@
 			&nbsp;&nbsp;&nbsp;&nbsp; 1. If not randomized you must provide a, b, p, B&#40;x,y&#41;. Everything
 			else will be randomized. <br>
 			&nbsp;&nbsp;&nbsp;&nbsp; 2. If randomized, you only need to provide bit length of the primary number [p], everything else will be randomized. <br>
-			&nbsp;&nbsp;&nbsp;&nbsp; 3. It's better to choose random input because manual input requires you to think a lot first.
+			&nbsp;&nbsp;&nbsp;&nbsp; 3. It's better to choose random input because manual input requires you
+			to think a lot first. <br>
+			&nbsp;&nbsp;&nbsp;&nbsp; 4. Randomized will be very much faster than manual because we don't need to validate your long integer input.
 		</p>
 {% endblock %}
 
@@ -49,7 +51,7 @@
 							</div>
 							<div class="col-md-12" id="randomInput">
 								<div class="form-group">
-									<label for="bitLength">Bit length</label>
+									<label for="bitLength">Key size</label>
 									<input type="number" 
 									 value={% if form and form.bitLength %}{{ form.bitLength }}{% else %} 12 {% endif %}
 									 class="form-control" id="bitLength" aria-describedby="bitLength" name="bitLength" />

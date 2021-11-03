@@ -1,12 +1,9 @@
 import os
 import random
-
-from sympy.core.basic import as_Basic
 import utils
 import math
+import sympy
 
-from Crypto.Util import number
-from Crypto.Random import get_random_bytes
 from datetime import datetime
 from typing import Tuple, List
 from utils.blockText import ciphertextToArrTupleInt
@@ -64,18 +61,19 @@ class ECC:
 		"""
 		# Randomized case.
 		if (is_random):
-			p = number.getPrime(p_size, randfunc=get_random_bytes)
-			a = random.randint(2, p-1)
-			b = random.randint(1, p-1)
+			p = sympy.randprime(pow(2, p_size - 1) + 1, pow(2, p_size) - 1)
+			a = random.randrange(2, p-1)
+			b = random.randrange(1, p-1)
 			while (4*(a**3) + 27*(b**2) == 0):
-				a = random.randint(2, p-1)
-				b = random.randint(1, p-1)
+				a = random.randrange(2, p-1)
+				b = random.randrange(1, p-1)
 
 		# Validation.
-		if (not self.math.isPrime(p)):
-			raise Exception("P must be a prime number")
-		if(4*(a**3) + 27*(b**2) == 0):
-			raise Exception("Invalid a and b value (4a^3 + 27b^2 != 0)")
+		if (not is_random):
+			if (not self.math.isPrime(p)):
+				raise Exception("P must be a prime number")
+			if(4*(a**3) + 27*(b**2) == 0):
+				raise Exception("Invalid a and b value (4a^3 + 27b^2 != 0)")
 		
 		# Fill the value.
 		self.a = a
@@ -89,17 +87,23 @@ class ECC:
 		# Randomized case.
 		if (is_random):
 			group = []
+			lengroup= 0
 			# Enumerate all possible x and y values.
 			for x in range(self.p):
+				if (lengroup >= 257):
+					break
 				right_side = (pow(x,3, self.p) + self.a*x + self.b) % self.p
 				for y in range(self.p):
+					if (lengroup >= 257):
+						break
 					left_side = pow(y,2,self.p)
 					# If matching then (x,y) is part of the group.
 					if (right_side == left_side):
 						group.append((x,y))
+						lengroup += 1
 			
 			# Get the length.
-			N = len(group)
+			N = lengroup
 		# Validation.
 		if(N < 256):
 			raise Exception("Group size must be atleast 256 point")
@@ -124,13 +128,13 @@ class ECC:
 		"""
 		if (is_random):
 			# Generate private key
-			d = random.randint(2, self.p-1)
+			d = random.randrange(2, self.p-1)
 
 			# Generate public key.
 			Q = self.perkalianTitik(d, self.B)
 			while ((Q[0]==math.inf and Q[1]==math.inf)):
 				# Generate private key
-				d = random.randint(2, self.p-2)
+				d = random.randrange(2, self.p-1)
 
 				# Generate public key.
 				Q = self.perkalianTitik(d, self.B)
@@ -171,7 +175,7 @@ class ECC:
 				return (math.inf, math.inf)
 			else:
 				# Rumus gradien pada penggandaan.
-				m = ((3*(xp**2) + self.a) * self.math.modinv2(2*yp, self.p)) % self.p
+				m = ((3*(xp**2) + self.a) * self.math.modinv3(2*yp, self.p)) % self.p
 
 				# Rumus xr dan yr pada penggandaan.
 				xr = (m**2 - 2*xp) % self.p
@@ -184,7 +188,7 @@ class ECC:
 			else:
 				# Rumus gradien biasa.
 				
-				m = ((yp -yq) * self.math.modinv2(xp - xq, self.p)) % self.p
+				m = ((yp -yq) * self.math.modinv3(xp - xq, self.p)) % self.p
 				# Rumus xr dan yr pada penggandaan.
 				xr = (m**2 - xp - xq) % self.p
 				yr = (m*(xp-xr)-yp) % self.p
@@ -389,7 +393,7 @@ class ECEG:
 		for char in plain_text:
 			# Encrypt.
 			pm = self.ecc.group[ord(char)]
-			k = random.randint(2, self.ecc.p - 2)
+			k = random.randrange(2, self.ecc.p - 2)
 			a = self.ecc.perkalianTitik(k, self.ecc.B)
 			b = self.ecc.penjumlahanTitik(pm, self.ecc.perkalianTitik(k, self.ecc.Q))
 

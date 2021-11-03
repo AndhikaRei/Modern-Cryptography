@@ -1,6 +1,6 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, current_app
-from werkzeug.datastructures import FileStorage
+from flask import Flask, render_template, request, redirect, url_for
+
 
 from ElGamal import ElGamal_Crypt, ElGamalKeygen
 from ECEG import ECC, ECEG
