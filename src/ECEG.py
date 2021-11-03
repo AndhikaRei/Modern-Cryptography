@@ -30,7 +30,9 @@ class ECC:
 		kunci publik, adalah hasil kali antara x dan titik basis B: Q = x.B
 	"""
 
-	def __init__(self, a:int=0, b:int=0, p:int=0, N:int=0, B:Tuple[int, int]=(0,0), group:List[Tuple[int, int]]=None, x:int=0, Q:Tuple[int,int]=(0,0)) -> None:
+	def __init__(self, a:int=0, b:int=0, p:int=0, N:int=0, B:Tuple[int, int]=(0,0), 
+		group:List[Tuple[int, int]]=None, x:int=0, Q:Tuple[int,int]=(0,0)) -> None:
+		
 		"""
 		Constructor for ECEGKeygen class.
 		"""
@@ -55,7 +57,8 @@ class ECC:
 		self.generateBasis(is_random=True)
 		self.generateKey(is_random=True)
 				
-	def generateEllipticCurve(self, a:int=0, b:int=0, p:int=0, is_random:bool=True, p_size:int=12)->None:
+	def generateEllipticCurve(self, a:int=0, b:int=0, p:int=0, is_random:bool=True, 
+		p_size:int=12)->None:
 		"""
 		Generate Elliptic Curve basic parameter
 		"""
@@ -405,15 +408,7 @@ class ECEG:
 			b1 = str(b[0]).rjust(len(str(self.ecc.p)), "0")
 			b2 = str(b[1]).rjust(len(str(self.ecc.p)), "0")
 			complete_b.append(b1+b2)
-		
-		# print("=======================")
-		# print("Before combined")
-		# print("a: ", end="")
-		# print(complete_a)
-		# print("b: ", end="")
-		# print(complete_b)
-		# print("=======================")
-		
+
 		# Combine a to one string and b to one string.
 		complete_a = "".join(complete_a)
 		complete_b = "".join(complete_b)

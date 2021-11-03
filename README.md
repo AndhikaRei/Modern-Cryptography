@@ -59,9 +59,13 @@ Then open your web browser and go to [localhost:5000](http://localhost:5000)
 
 ## Screen Capture 
 ### RSA
+![Screenshot](img/RSA.png)
 
 ### ElGamal
+![Screenshot](img/ElGamal.png)
 
 ### Pallier
+![Screenshot](img/Pallier.png)
 
-### ECC
+### ECEG
+![Screenshot](img/ECEG.png)

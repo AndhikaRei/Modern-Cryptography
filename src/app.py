@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from ElGamal import ElGamal_Crypt, ElGamalKeygen
 from ECEG import ECC, ECEG
 from RSA import RSA_Crypt
-from Paillier import Paillier_Crypt
+from paillier import Paillier_Crypt
 
 
 # Flask Configuration.
