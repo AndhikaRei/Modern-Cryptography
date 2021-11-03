@@ -80,7 +80,7 @@ class Paillier_Crypt():
 
         return "".join(res)
     
-    def decrypt(self, cipher_text: str, lmd: int, miu: int) -> str:
+    def decrypt(self, cipher_text: str, lmd: int, miu: int, n: int) -> str:
         max_length = len(str(pow(n, 2)))
         num_alphabet = (len(str(n))-1)//3
         messages_int = utils.ciphertextToArrInt(cipher_text, max_length)

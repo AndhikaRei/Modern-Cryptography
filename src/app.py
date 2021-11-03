@@ -285,7 +285,7 @@ def paillierKey():
 	return render_template('pages/paillierkey.html', random=True)
 
 # Generate key route.
-@app.route('/rsa-gen-key/generate', methods=['POST', 'GET'])
+@app.route('/paillier-gen-key/generate', methods=['POST', 'GET'])
 def paillierKeyGenerate():
 	if request.method == 'POST':
 		# Get the request payload.
@@ -311,7 +311,7 @@ def paillierKeyGenerate():
 			
 			# Formatting the result.
 			result_public_key = "{} {}".format(g, n)
-			result_private_key = "{} {}".format(lmd, miu)
+			result_private_key = "{} {} {}".format(lmd, miu, n)
 
 			return render_template(
 				'pages/paillierkey.html', 
@@ -388,7 +388,7 @@ def rsaDecrypt():
 				'pages/rsa.html', 
 				encrypt=False, 
 				form = request.form, 
-				result_plaintext=plain_text
+				result_plaintext=plain_text,
 			)
 		
 		except (Exception) as e:
@@ -398,6 +398,85 @@ def rsaDecrypt():
 	else:
 		# Render default webpage. 
 		return redirect(url_for('rsa'))
+
+"""
+--------------------------------------------------------------
+# Route for Paillier
+--------------------------------------------------------------
+"""
+# Index route.
+@app.route('/paillier')
+def paillier():
+	return render_template('pages/paillier.html', encrypt=True)
+
+# Encrypt route
+@app.route('/paillier/encrypt', methods=['POST', 'GET'])
+def paillierEncrypt():
+	if request.method == 'POST':
+		# Get the request payload.
+		try:
+			# Get the payload.
+			plaintext = request.form['plaintext']
+			public_key = request.form['key'].split(' ')
+
+			paillier = Paillier_Crypt()
+			ciphertext = paillier.encrypt(plaintext, int(public_key[0]), int(public_key[1]))
+
+			return render_template(
+				'pages/paillier.html', 
+				encrypt=True, 
+				form = request.form, 
+				result_ciphertext=ciphertext
+			)
+		
+		except (Exception) as e:
+			# Render error webpage.
+			return render_template(
+				'pages/paillier.html', 
+				encrypt=True,
+				error = e, 
+				form = request.form,
+			)
+	else:
+		# Render default webpage. 
+		return redirect(url_for('paillier'))
+
+# Decrypt route.
+@app.route('/paillier/decrypt', methods=['POST', 'GET'])
+def paillierDecrypt():
+	if request.method == 'POST':
+	# Get the request payload.
+		try:
+			# Get the payload.
+			ciphertext = request.form['ciphertext']
+			private_key = request.form['key'].split(' ')
+
+			paillier = Paillier_Crypt()
+			plain_text = paillier.decrypt(
+				ciphertext, 
+				int(private_key[0]), 
+				int(private_key[1]),
+				int(private_key[2]),
+			)
+			
+			return render_template(
+				'pages/paillier.html', 
+				encrypt=False, 
+				form = request.form, 
+				result_plaintext=plain_text
+			)
+		
+		except (Exception) as e:
+			# Render error webpage.
+			return render_template(
+				'pages/paillier.html', 
+				encrypt=True,
+				error = e, 
+				form = request.form
+			)
+	else:
+		# Render default webpage. 
+		return redirect(url_for('paillier'))
 
 
 """
